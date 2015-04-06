@@ -1,0 +1,198 @@
+package exercise09;
+//exercise09_1에 해당
+import java.util.LinkedList;
+import java.util.Queue;
+
+
+public class BinarySearchTree {
+	private class Node09{
+		int data;
+		Node09 left, right, parent;
+		Node09(int data){ this.data = data;}
+	}
+	
+	Node09 root;
+	
+	public Node09 search(int num){
+		Node09 tmp = root;
+		while(tmp != null && tmp.data != num){
+			if(tmp.data > num){ tmp = tmp.left; }
+			else{ tmp = tmp.right; }
+		}
+		//if(tmp == null){ System.out.println("search result : null"); }
+		return tmp;
+	}
+
+	public void insert(int num){
+		Node09 newnode = new Node09(num);
+		Node09 pre = null, tmp = root;	
+		while(tmp != null){
+			pre = tmp;
+			if(tmp.data > newnode.data){ tmp = tmp.left; }
+			else{ tmp = tmp.right; }
+		}
+		newnode.parent = pre;
+		if(pre == null){ root = newnode; }
+		else if(pre.data > newnode.data){ pre.left = newnode; }
+		else{ pre.right = newnode; }		
+	}
+	
+	public Node09 delete(int num){
+		Node09 tmp = search(num);
+		Node09 target, child;
+		
+		//target은 자식이 하나 이하인 노드
+		if(tmp.left == null || tmp.right == null){ target = tmp; }
+		else{ target = successor(num); }
+		
+		//child는 target의 하나뿐인 자식노드
+		if(target.left != null){ child = target.left; }
+		else{ child = target.right; }
+		
+		//child의 새 부모 정해주기
+		if(child != null){ child.parent = target.parent; }
+		
+		if(target.parent == null){ root = child;} //target.parent가 null이면서 child가 null인 경우는 없다. 
+		//부모의 새 자식노드(child) 정해주기
+		else if(target == target.parent.left){ target.parent.left = child; }
+		else {target.parent.right = child;}
+		
+		if(target.data != num){ tmp.data = target.data; } //successor를 target위치에 가져오기
+		return target; //삭제된 노드 반환
+	}
+	
+	public Node09 maximum(){
+		Node09 tmp = root;
+		while(true){
+			if(tmp.right != null){ tmp = tmp.right; }
+			else{ break; }
+		}		
+		return tmp;
+	}
+	
+	public Node09 minimum(){
+		Node09 tmp = root;
+		while(true){
+			if(tmp.left != null){ tmp = tmp.left; }
+			else{ break; }
+		}		
+		return tmp;
+	}
+	
+	public Node09 successor(int num){
+		Node09 tmp = search(num);
+		if(tmp.right != null){
+			Node09 newtmp = tmp.right;
+			while(true){
+				if(newtmp.left != null){newtmp = newtmp.left; }
+				else{ break; }
+			}
+			return newtmp;
+		}
+		Node09 pre = tmp.parent;
+		while(true){
+			if(pre.left == tmp || pre == null){ return pre; }
+			else{
+				tmp = pre;
+				pre = pre.parent;
+			}
+		}
+	}
+	
+	public Node09 predecessor(int num){
+		Node09 tmp = search(num);
+		if(tmp.left != null){
+			Node09 newtmp = tmp.left;
+			while(true){
+				if(newtmp.right != null){newtmp = newtmp.right; }
+				else{ break; }
+			}
+			return newtmp;
+		}
+		Node09 pre = tmp.parent;
+		while(true){
+			if(pre.right == tmp || pre == null){ return pre; }
+			else{
+				tmp = pre;
+				pre = pre.parent;
+			}
+		}
+	}
+	
+	///이하는 지난수업 이진트리 순회 함수
+	
+	public void inorderTraverse(Node09 node){
+		if(node != null){
+			inorderTraverse(node.left);
+			System.out.print(" " + node.data);
+			inorderTraverse(node.right);			
+		}
+		if(node != null && node.data == root.data){	System.out.println("\n"); }
+	}
+	
+	public void preorderTraverse(Node09 node){
+		if(node != null){
+			System.out.print(" " + node.data);
+			preorderTraverse(node.left);
+			preorderTraverse(node.right);			
+		}
+		if(node != null && node.data == root.data){	System.out.println("\n"); }
+	}
+	
+	public void postorderTraverse(Node09 node){
+		if(node != null){
+			postorderTraverse(node.left);
+			postorderTraverse(node.right);
+			System.out.print(" " + node.data);			
+		}
+		if(node != null && node.data == root.data){	System.out.println("\n"); }
+	}
+	
+	public void levelorderTraverse(){
+		Queue<Node09> queue = new LinkedList<Node09>();
+		queue.offer(root);
+
+		System.out.print(" " + root.data);
+		while(!queue.isEmpty()){
+			Node09 temp = queue.poll();
+
+			Node09 next1 = temp.left;
+			if(next1 != null){
+				queue.offer(next1);
+				System.out.print(" " + next1.data);
+			}
+			Node09 next2 = temp.right;
+			if(next2 != null){
+				queue.offer(next2);
+				System.out.print(" " + next2.data);
+			}			
+		}
+		System.out.println("\n");
+	}
+	
+	
+	
+	public static void main(String args[]){
+		BinarySearchTree tree = new BinarySearchTree();
+		
+		tree.insert(7);
+		tree.insert(3);
+		tree.insert(1);
+		tree.insert(2);
+		tree.insert(5);
+		tree.insert(4);
+		tree.insert(6);
+		tree.insert(15);
+		tree.insert(13);
+		tree.insert(19);
+		tree.insert(11);
+		tree.insert(14);
+		tree.insert(18);
+		
+		//tree.delete(7);
+	
+		int num = 7;
+		System.out.println(tree.search(num) != null ? tree.search(num).data : null);
+	}
+
+}
